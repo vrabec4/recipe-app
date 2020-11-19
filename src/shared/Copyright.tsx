@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 
-import Typography from "@material-ui/core/Typography";
-import Link from "@material-ui/core/Link";
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 
 type Props = {
   copyrightText: string;
@@ -10,12 +10,12 @@ type Props = {
 export function Copyright({ copyrightText }: Props) {
   return (
     <Typography variant='body2' color='textSecondary' align='center'>
-      {"Copyright © "}
+      {'Copyright © '}
       <Link color='inherit' href='https://material-ui.com/'>
         {copyrightText}
-      </Link>{" "}
+      </Link>{' '}
       {new Date().getFullYear()}
-      {"."}
+      {'.'}
     </Typography>
   );
 }
