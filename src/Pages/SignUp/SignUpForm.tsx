@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FormEventHandler, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
@@ -14,6 +14,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { Copyright } from '../../shared/Copyright';
+import axios from '../../axios/axios-orders';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -35,12 +36,39 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
+
+const defaultFormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+};
+
 export function SignUpForm() {
   const classes = useStyles();
   const history = useHistory();
+  const [formData, setFormData] = useState<FormData>(defaultFormData);
 
   const redirectToSignInForm = () => {
     history.push('/');
+  };
+
+  const handleSignUp = () => {
+    axios.post('/sign-up', formData);
+  };
+
+  const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    setFormData({
+      ...formData,
+      [event.target.name]: newValue,
+    });
   };
 
   return (
@@ -65,13 +93,35 @@ export function SignUpForm() {
                 id='firstName'
                 label='First Name'
                 autoFocus
+                value={formData.firstName}
+                onChange={handleFormChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField variant='outlined' required fullWidth id='lastName' label='Last Name' name='lastName' autoComplete='lname' />
+              <TextField
+                variant='outlined'
+                required
+                fullWidth
+                id='lastName'
+                label='Last Name'
+                name='lastName'
+                autoComplete='lname'
+                value={formData.lastName}
+                onChange={handleFormChange}
+              />
             </Grid>
             <Grid item xs={12}>
-              <TextField variant='outlined' required fullWidth id='email' label='Email Address' name='email' autoComplete='email' />
+              <TextField
+                variant='outlined'
+                required
+                fullWidth
+                id='email'
+                label='Email Address'
+                name='email'
+                autoComplete='email'
+                value={formData.email}
+                onChange={handleFormChange}
+              />
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -83,10 +133,12 @@ export function SignUpForm() {
                 type='password'
                 id='password'
                 autoComplete='current-password'
+                value={formData.password}
+                onChange={handleFormChange}
               />
             </Grid>
           </Grid>
-          <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
+          <Button type='button' fullWidth variant='contained' color='primary' className={classes.submit} onClick={handleSignUp}>
             Sign Up
           </Button>
           <Grid container justify='flex-end'>
