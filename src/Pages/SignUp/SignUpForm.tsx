@@ -60,7 +60,7 @@ export function SignUpForm() {
   };
 
   const handleSignUp = () => {
-    axios.post('/sign-up', formData);
+    return null;
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
