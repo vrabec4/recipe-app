@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
-import { Route, useRouteMatch } from 'react-router';
+import { Route, useHistory, useRouteMatch } from 'react-router';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -16,18 +16,36 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import { useDashBoardStyles } from '../../hooks/useDashboardStyles';
+import { useAuthContext } from '../../firebase/firebaseContext';
 import { Navigation } from '../../shared/Navigation';
 import { RecipePage } from '../Recipe Pages/RecipePage';
-import { Copyright } from '../../shared/Copyright';
+import { Copyright, SimplePopover, Profile } from '../../shared';
 
 export function Dashboard() {
   const classes = useDashBoardStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { logout, authentificationErros, currentUser } = useAuthContext();
+  useEffect(() => {
+    setError(authentificationErros.errorMessage);
+  }, [authentificationErros]);
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = async () => {
+    setError('');
+    try {
+      setLoading(true);
+      await logout();
+    } catch {
+      setError('Failed to login');
+    }
+    setLoading(false);
   };
 
   const { path } = useRouteMatch();
@@ -49,6 +67,9 @@ export function Dashboard() {
           <Typography component='h1' variant='h6' color='inherit' noWrap className={classes.title}>
             Dashboard
           </Typography>
+          <SimplePopover>
+            <Profile name={currentUser?.displayName} email={currentUser?.email} handleLogout={handleLogout} />
+          </SimplePopover>
         </Toolbar>
       </AppBar>
       <Drawer

@@ -1,20 +1,21 @@
-import React, { FormEventHandler, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
+import { Alert } from '@material-ui/lab';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
 
 import { Copyright } from '../../shared/Copyright';
-import axios from '../../axios/axios-orders';
+import { useAuthContext } from '../../firebase/firebaseContext';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -37,30 +38,42 @@ const useStyles = makeStyles(theme => ({
 }));
 
 type FormData = {
-  firstName: string;
-  lastName: string;
   email: string;
   password: string;
+  confirmedPassword: string;
 };
 
-const defaultFormData = {
-  firstName: '',
-  lastName: '',
+const defaultFormData: FormData = {
   email: '',
   password: '',
+  confirmedPassword: '',
 };
 
 export function SignUpForm() {
   const classes = useStyles();
   const history = useHistory();
   const [formData, setFormData] = useState<FormData>(defaultFormData);
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { signup, authentificationErros } = useAuthContext();
+  const notEqualPasswords = formData.password !== '' && formData.password !== formData.confirmedPassword;
 
-  const redirectToSignInForm = () => {
-    history.push('/');
-  };
+  useEffect(() => {
+    setError(authentificationErros.errorMessage);
+  }, [authentificationErros, formData]);
 
   const handleSignUp = () => {
-    return null;
+    if (notEqualPasswords) {
+      return setError('Paswords do not match');
+    }
+    try {
+      setError('');
+      setLoading(true);
+      signup(formData.email, formData.password);
+    } catch {
+      setError(authentificationErros.errorMessage);
+    }
+    setLoading(false);
   };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,35 +94,13 @@ export function SignUpForm() {
         <Typography component='h1' variant='h5'>
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete='fname'
-                name='firstName'
-                variant='outlined'
-                required
-                fullWidth
-                id='firstName'
-                label='First Name'
-                autoFocus
-                value={formData.firstName}
-                onChange={handleFormChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant='outlined'
-                required
-                fullWidth
-                id='lastName'
-                label='Last Name'
-                name='lastName'
-                autoComplete='lname'
-                value={formData.lastName}
-                onChange={handleFormChange}
-              />
-            </Grid>
+            {error && (
+              <Grid item xs={12}>
+                <Alert severity='error'>{error}</Alert>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TextField
                 variant='outlined'
@@ -137,15 +128,35 @@ export function SignUpForm() {
                 onChange={handleFormChange}
               />
             </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant='outlined'
+                required
+                fullWidth
+                name='confirmedPassword'
+                label='Confirm Password'
+                id='confirmedPassword'
+                type='password'
+                autoComplete='current-password'
+                value={formData.confirmedPassword}
+                onChange={handleFormChange}
+              />
+            </Grid>
           </Grid>
-          <Button type='button' fullWidth variant='contained' color='primary' className={classes.submit} onClick={handleSignUp}>
+          <Button
+            type='button'
+            fullWidth
+            disabled={loading}
+            variant='contained'
+            color='primary'
+            className={classes.submit}
+            onClick={handleSignUp}
+          >
             Sign Up
           </Button>
           <Grid container justify='flex-end'>
             <Grid item>
-              <Link href='#' variant='body2' onClick={redirectToSignInForm}>
-                Already have an account? Sign in
-              </Link>
+              <Link variant='body2'>Already have an account? Sign in</Link>
             </Grid>
           </Grid>
         </form>
