@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useHistory, withRouter } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
 import { Alert } from '@material-ui/lab';
@@ -16,6 +16,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import { Copyright } from '../../shared/Copyright';
 import { useAuthContext } from '../../firebase/firebaseContext';
+import { authentification } from '../../firebase/firebase';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -49,35 +50,24 @@ const defaultFormData: FormData = {
   confirmedPassword: '',
 };
 
-export function SignUpForm() {
+const SignUpForm = () => {
   const classes = useStyles();
   const history = useHistory();
   const [formData, setFormData] = useState<FormData>(defaultFormData);
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { signup, authentificationErros } = useAuthContext();
+  const { currentUser } = useAuthContext();
   const notEqualPasswords = formData.password !== '' && formData.password !== formData.confirmedPassword;
 
-  useEffect(() => {
-    setError(authentificationErros.errorMessage);
-  }, [authentificationErros, formData]);
-
-  const handleSignUp = () => {
-    if (notEqualPasswords) {
-      return setError('Paswords do not match');
-    }
-    try {
-      setError('');
-      setLoading(true);
-      signup(formData.email, formData.password);
-    } catch {
-      setError(authentificationErros.errorMessage);
-    }
-    setLoading(false);
-  };
+  function handleSignUp() {
+    const { email, password } = formData;
+    authentification.createUserWithEmailAndPassword(email, password);
+    history.push('/');
+  }
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
+    console.log(event.target.name);
     setFormData({
       ...formData,
       [event.target.name]: newValue,
@@ -156,7 +146,14 @@ export function SignUpForm() {
           </Button>
           <Grid container justify='flex-end'>
             <Grid item>
-              <Link variant='body2'>Already have an account? Sign in</Link>
+              <Link
+                variant='body2'
+                onClick={() => {
+                  history.push('/login');
+                }}
+              >
+                Already have an account? Sign in{' '}
+              </Link>
             </Grid>
           </Grid>
         </form>
@@ -166,4 +163,6 @@ export function SignUpForm() {
       </Box>
     </Container>
   );
-}
+};
+
+export default withRouter(SignUpForm); // Todo : refactor this export

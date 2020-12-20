@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
 import { Alert } from '@material-ui/lab';
@@ -18,6 +18,7 @@ import Container from '@material-ui/core/Container';
 
 import { Copyright } from '../../shared/Copyright';
 import { useAuthContext } from '../../firebase/firebaseContext';
+import { authentification } from '../../firebase/firebase';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -54,27 +55,23 @@ export function Login() {
   const [formData, setFormData] = useState<FormData>(defaultFormData);
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { login, authentificationErros, currentUser } = useAuthContext();
+  const { currentUser } = useAuthContext();
   useEffect(() => {
-    setError(authentificationErros.errorMessage);
-  }, [authentificationErros, formData]);
+    console.log(!currentUser);
+    !currentUser && setLoading(true);
+  }, [currentUser]);
 
   const handleOnClick = useCallback(() => {
-    console.log('dadadawd');
-    return history.push('/sign-up');
+    return history.push('/signup');
   }, [history]);
 
   const classes = useStyles();
+  console.log(currentUser);
+  function handleLogin() {
+    const { email, password } = formData;
 
-  async function handleLogin() {
-    try {
-      setError('');
-      setLoading(true);
-      await login(formData.email, formData.password);
-    } catch {
-      setError('Failed to login');
-    }
-    setLoading(false);
+    authentification.signInWithEmailAndPassword(email.trim(), password);
+    history.push('/');
   }
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,6 +83,12 @@ export function Login() {
       [event.target.name]: newValue,
     });
   };
+
+  // Todo Add Loader
+
+  if (currentUser) {
+    return <Redirect to='/' />;
+  }
 
   return (
     <Container component='main' maxWidth='xs'>

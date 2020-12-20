@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
-import { Route, useHistory, useRouteMatch } from 'react-router';
+import { Route, useRouteMatch } from 'react-router';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,16 +20,15 @@ import { useAuthContext } from '../../firebase/firebaseContext';
 import { Navigation } from '../../shared/Navigation';
 import { RecipePage } from '../Recipe Pages/RecipePage';
 import { Copyright, SimplePopover, Profile } from '../../shared';
+import { authentification } from '../../firebase/firebase';
 
 export function Dashboard() {
   const classes = useDashBoardStyles();
   const [open, setOpen] = useState<boolean>(true);
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
-  const { logout, authentificationErros, currentUser } = useAuthContext();
-  useEffect(() => {
-    setError(authentificationErros.errorMessage);
-  }, [authentificationErros]);
+  const { currentUser } = useAuthContext();
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -37,15 +36,8 @@ export function Dashboard() {
     setOpen(false);
   };
 
-  const handleLogout = async () => {
-    setError('');
-    try {
-      setLoading(true);
-      await logout();
-    } catch {
-      setError('Failed to login');
-    }
-    setLoading(false);
+  const handleLogout = () => {
+    return authentification.signOut();
   };
 
   const { path } = useRouteMatch();
@@ -105,3 +97,5 @@ export function Dashboard() {
     </div>
   );
 }
+
+// Todo : add correct links for Recipe categories
