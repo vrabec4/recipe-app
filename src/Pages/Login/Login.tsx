@@ -1,13 +1,14 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
 
 import Avatar from '@material-ui/core/Avatar';
+import { Alert } from '@material-ui/lab';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+import { Link } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
@@ -16,6 +17,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { Copyright } from '../../shared/Copyright';
+import { useAuthContext } from '../../firebase/firebaseContext';
+import { authentification } from '../../firebase/firebase';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -37,19 +40,55 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+type FormData = {
+  email: string;
+  password: string;
+};
+
+const defaultFormData: FormData = {
+  email: '',
+  password: '',
+};
+
 export function Login() {
   const history = useHistory();
+  const [formData, setFormData] = useState<FormData>(defaultFormData);
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
+  useEffect(() => {
+    console.log(!currentUser);
+    !currentUser && setLoading(true);
+  }, [currentUser]);
 
-  const redirectToDashboard = () => {
-    //Todo: add validation
-    history.push('/dashboard');
-  };
-
-  const redirectToSignUpForm = () => {
-    history.push('/sign-up');
-  };
+  const handleOnClick = useCallback(() => {
+    return history.push('/signup');
+  }, [history]);
 
   const classes = useStyles();
+  console.log(currentUser);
+  function handleLogin() {
+    const { email, password } = formData;
+
+    authentification.signInWithEmailAndPassword(email.trim(), password);
+    history.push('/');
+  }
+
+  const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    console.log(newValue);
+    console.log(newValue);
+    setFormData({
+      ...formData,
+      [event.target.name]: newValue,
+    });
+  };
+
+  // Todo Add Loader
+
+  if (currentUser) {
+    return <Redirect to='/' />;
+  }
 
   return (
     <Container component='main' maxWidth='xs'>
@@ -62,6 +101,11 @@ export function Login() {
           Sign in
         </Typography>
         <form className={classes.form}>
+          {error && (
+            <Grid item xs={12}>
+              <Alert severity='error'>{error}</Alert>
+            </Grid>
+          )}
           <TextField
             variant='outlined'
             margin='normal'
@@ -72,6 +116,7 @@ export function Login() {
             name='email'
             autoComplete='email'
             autoFocus
+            onChange={handleFormChange}
           />
           <TextField
             variant='outlined'
@@ -83,9 +128,10 @@ export function Login() {
             type='password'
             id='password'
             autoComplete='current-password'
+            onChange={handleFormChange}
           />
           <FormControlLabel control={<Checkbox value='remember' color='primary' />} label='Remember me' />
-          <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit} onClick={redirectToDashboard}>
+          <Button type='button' fullWidth variant='contained' color='primary' className={classes.submit} onClick={handleLogin}>
             Sign In
           </Button>
           <Grid container>
@@ -95,7 +141,7 @@ export function Login() {
               </Link>
             </Grid>
             <Grid item>
-              <Link variant='body2' onClick={redirectToSignUpForm}>
+              <Link variant='body2' onClick={handleOnClick}>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

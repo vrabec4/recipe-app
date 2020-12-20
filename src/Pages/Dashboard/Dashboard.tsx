@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import clsx from 'clsx';
 import { Route, useRouteMatch } from 'react-router';
 
@@ -16,18 +16,28 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import { useDashBoardStyles } from '../../hooks/useDashboardStyles';
+import { useAuthContext } from '../../firebase/firebaseContext';
 import { Navigation } from '../../shared/Navigation';
 import { RecipePage } from '../Recipe Pages/RecipePage';
-import { Copyright } from '../../shared/Copyright';
+import { Copyright, SimplePopover, Profile } from '../../shared';
+import { authentification } from '../../firebase/firebase';
 
 export function Dashboard() {
   const classes = useDashBoardStyles();
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState<boolean>(true);
+  const [error, setError] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { currentUser } = useAuthContext();
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    return authentification.signOut();
   };
 
   const { path } = useRouteMatch();
@@ -49,6 +59,9 @@ export function Dashboard() {
           <Typography component='h1' variant='h6' color='inherit' noWrap className={classes.title}>
             Dashboard
           </Typography>
+          <SimplePopover>
+            <Profile name={currentUser?.displayName} email={currentUser?.email} handleLogout={handleLogout} />
+          </SimplePopover>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -84,3 +97,5 @@ export function Dashboard() {
     </div>
   );
 }
+
+// Todo : add correct links for Recipe categories

@@ -7,7 +7,6 @@ interface ParamTypes {
 
 export function RecipePage() {
   const { recipeCategoryID } = useParams<ParamTypes>();
-  console.log({ recipeCategoryID });
   return (
     <div>
       <h1>{`${recipeCategoryID} recipes`}</h1>
