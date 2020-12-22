@@ -61,18 +61,17 @@ export function Login() {
     !currentUser && setLoading(true);
   }, [currentUser]);
 
-  const handleOnClick = useCallback(() => {
+  const handleOnClick = () => {
     return history.push('/signup');
-  }, [history]);
+  };
 
   const classes = useStyles();
   console.log(currentUser);
-  function handleLogin() {
+  const handleLogin = () => {
     const { email, password } = formData;
-
     authentification.signInWithEmailAndPassword(email.trim(), password);
-    history.push('/');
-  }
+    history.push('/dashboard');
+  };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -87,7 +86,7 @@ export function Login() {
   // Todo Add Loader
 
   if (currentUser) {
-    return <Redirect to='/' />;
+    return <Redirect to='/dashboard' />;
   }
 
   return (
