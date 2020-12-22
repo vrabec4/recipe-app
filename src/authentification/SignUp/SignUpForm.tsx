@@ -59,11 +59,11 @@ const SignUpForm = () => {
   const { currentUser } = useAuthContext();
   const notEqualPasswords = formData.password !== '' && formData.password !== formData.confirmedPassword;
 
-  function handleSignUp() {
+  const handleSignUp = () => {
     const { email, password } = formData;
     authentification.createUserWithEmailAndPassword(email, password);
     history.push('/');
-  }
+  };
 
   const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -149,7 +149,7 @@ const SignUpForm = () => {
               <Link
                 variant='body2'
                 onClick={() => {
-                  history.push('/login');
+                  history.push('/');
                 }}
               >
                 Already have an account? Sign in{' '}

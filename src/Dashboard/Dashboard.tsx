@@ -15,12 +15,12 @@ import Grid from '@material-ui/core/Grid';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-import { useDashBoardStyles } from '../../hooks/useDashboardStyles';
-import { useAuthContext } from '../../firebase/firebaseContext';
-import { Navigation } from '../../shared/Navigation';
-import { RecipePage } from '../Recipe Pages/RecipePage';
-import { Copyright, SimplePopover, Profile } from '../../shared';
-import { authentification } from '../../firebase/firebase';
+import { useDashBoardStyles } from '../hooks/useDashboardStyles';
+import { useAuthContext } from '../firebase/firebaseContext';
+import { Navigation } from '../Layout/Navigation';
+import { DashboardContent } from './DashboardContent';
+import { Copyright, SimplePopover, Profile } from '../shared';
+import { authentification } from '../firebase/firebase';
 
 export function Dashboard() {
   const classes = useDashBoardStyles();
@@ -84,10 +84,7 @@ export function Dashboard() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth='lg' className={classes.container}>
           <Grid container spacing={3}>
-            <Route exact path={path}></Route>
-            <Route path={`${path}/:recipeCategoryID`}>
-              <RecipePage />
-            </Route>
+            <Route path={`${path}/:recipeCategoryID`} component={DashboardContent} />
           </Grid>
           <Box pt={4}>
             <Copyright copyrightText='My recipes' />

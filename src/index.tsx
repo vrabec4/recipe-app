@@ -3,14 +3,16 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App/App';
 import reportWebVitals from './reportWebVitals';
-
+import { AuthProvider } from './firebase/firebaseContext';
 import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
