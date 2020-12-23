@@ -7,7 +7,7 @@ export const useDashBoardStyles = makeStyles(theme => ({
     display: 'flex',
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 16, // keep right padding when drawer closed
   },
   toolbarIcon: {
     display: 'flex',

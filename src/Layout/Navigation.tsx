@@ -1,12 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { useRouteMatch } from 'react-router';
+
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import AddIcon from '@material-ui/icons/Add';
 import { List } from '@material-ui/core';
-import { useRouteMatch } from 'react-router';
-import { Link } from 'react-router-dom';
+import DashboardIcon from '@material-ui/icons/Dashboard';
 
 // Todo: create menu using map an NavLinkListITem
 
@@ -15,6 +17,12 @@ export function Navigation() {
 
   return (
     <List>
+      <ListItem button component={Link} to={`${url}`}>
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary='Dashboard' />
+      </ListItem>
       <ListItem button component={Link} to={`${url}/add`}>
         <ListItemIcon>
           <AddIcon />
@@ -45,7 +53,7 @@ export function Navigation() {
         </ListItemIcon>
         <ListItemText primary='Vegie' />
       </ListItem>
-      <ListItem button component={Link} to={`${url}`}>
+      <ListItem button component={Link} to={`${url}/all-recipes`}>
         <ListItemIcon>
           <ArrowRightIcon />
         </ListItemIcon>
