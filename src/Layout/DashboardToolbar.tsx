@@ -21,8 +21,8 @@ export function DashboardToolbar({ sideBarOpen, openSideBar }: Props) {
   const classes = useDashBoardStyles();
   const { currentUser } = useAuthContext();
 
-  const handleLogout = () => {
-    return authentification.signOut();
+  const handleLogout = async () => {
+    return await authentification.signOut();
   };
 
   return (
