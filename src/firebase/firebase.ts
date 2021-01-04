@@ -4,7 +4,7 @@ import 'firebase/database';
 
 const firebaseDevConfiguration = firebase.initializeApp({
   // Why env file don't work ?
-  // Todo add also production configuration
+  // Todo add also production configuration from firebase
   apiKey: 'AIzaSyD6htEMy4bVK3AU-BQglX_yJgCUypx6iIw',
   authDomain: 'cook-book-49a05.firebaseapp.com',
   databaseURL: 'https://cook-book-49a05.firebaseio.com',
